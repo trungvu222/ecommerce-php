@@ -28,57 +28,69 @@
                     </h6>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    @if($errors->any())
+                        @foreach($errors->all() as $error)
+                        <div class="alert alert-danger">{{ $error }}</div>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+
             <div class="checkout__form">
                 <h4>Billing Details</h4>
-                <form action="#">
+                <form method="POST" action="{{ route('checkout.store') }}">
+                    @csrf
                     <div class="row">
                         <div class="col-lg-8 col-md-6">
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
-                                        <p>Fist Name<span>*</span></p>
-                                        <input type="text">
+                                        <p>First Name<span>*</span></p>
+                                        <input type="text" name="firstname" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Last Name<span>*</span></p>
-                                        <input type="text">
+                                        <input type="text" name="lastname" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="checkout__input">
                                 <p>Country<span>*</span></p>
-                                <input type="text">
+                                <input type="text" name="country" required>
                             </div>
-                            <div class="checkout__input">
+                            <!-- <div class="checkout__input">
                                 <p>Address<span>*</span></p>
                                 <input type="text" placeholder="Street Address" class="checkout__input__add">
                                 <input type="text" placeholder="Apartment, suite, unite ect (optinal)">
-                            </div>
+                            </div> -->
                             <div class="checkout__input">
                                 <p>Town/City<span>*</span></p>
-                                <input type="text">
+                                <input type="text" name="city" required>
                             </div>
-                            <div class="checkout__input">
+                            <!-- <div class="checkout__input">
                                 <p>Country/State<span>*</span></p>
                                 <input type="text">
-                            </div>
+                            </div> -->
                             <div class="checkout__input">
                                 <p>Postcode / ZIP<span>*</span></p>
-                                <input type="text">
+                                <input type="text" name="zipcode" required>
                             </div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Phone<span>*</span></p>
-                                        <input type="text">
+                                        <input name="phone" type="text" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Email<span>*</span></p>
-                                        <input type="text">
+                                        <input type="email" name="email" required>
                                     </div>
                                 </div>
                             </div>
@@ -95,30 +107,38 @@
                                 <p>Account Password<span>*</span></p>
                                 <input type="text">
                             </div>
-                            <div class="checkout__input__checkbox">
+                            <!-- <div class="checkout__input__checkbox">
                                 <label for="diff-acc">
                                     Ship to a different address?
                                     <input type="checkbox" id="diff-acc">
                                     <span class="checkmark"></span>
                                 </label>
-                            </div>
+                            </div> -->
                             <div class="checkout__input">
-                                <p>Order notes<span>*</span></p>
-                                <input type="text"
+                                <p>Order notes</p>
+                                <input type="text" name="notes"
                                     placeholder="Notes about your order, e.g. special notes for delivery.">
                             </div>
+
                         </div>
                         <div class="col-lg-4 col-md-6">
                             <div class="checkout__order">
                                 <h4>Your Order</h4>
                                 <div class="checkout__order__products">Products <span>Total</span></div>
                                 <ul>
-                                    <li>Vegetable’s Package <span>$75.99</span></li>
-                                    <li>Fresh Vegetable <span>$151.99</span></li>
-                                    <li>Organic Bananas <span>$53.99</span></li>
+                                    @foreach( $cart_products as $product )
+                                    <li>{{ $product->model->title }} <span>{{ $product->qty }} x ${{ $product->model->getPrice() }}</span></li>
+                                    @endforeach
                                 </ul>
-                                <div class="checkout__order__subtotal">Subtotal <span>$750.99</span></div>
-                                <div class="checkout__order__total">Total <span>$750.99</span></div>
+                                <div class="checkout__order__subtotal">Subtotal 
+                                    <span>${{ number_format( ( (int) \Cart::instance('default')->subtotal(0,'','') ) / 100 , 2, ',', ',') }}</span>
+                                </div>
+                                <div class="checkout__order__tax">Tax 
+                                    <span>${{ number_format( ( (int) \Cart::tax(0,'','') ) / 100 , 2, ',', ',') }}</span>
+                                </div>
+                                <div class="checkout__order__total">Total 
+                                    <span>${{ number_format( ( (int) \Cart::instance('default')->total(0,'','') ) / 100 , 2, ',', ',') }}</span>
+                                </div>
                                 <div class="checkout__input__checkbox">
                                     <label for="acc-or">
                                         Create an account?
@@ -143,6 +163,7 @@
                                     </label>
                                 </div>
                                 <button type="submit" class="site-btn">PLACE ORDER</button>
+                                
                             </div>
                         </div>
                     </div>

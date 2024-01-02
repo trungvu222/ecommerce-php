@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Ogani Template">
+    <meta name="_token" content="{{ csrf_token() }}">
     <meta name="keywords" content="Ogani, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -21,6 +22,10 @@
     <link rel="stylesheet" href="{{ asset('assets/css/owl.carousel.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/css/slicknav.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" type="text/css">
+    
+    <link rel="stylesheet" href="{{ asset('assets/css/mystyle.css') }}" type="text/css">
+
+    @yield('styles')
 </head>
 
 <body>
@@ -58,18 +63,10 @@
         </div>
         <nav class="humberger__menu__nav mobile-menu">
             <ul>
-                <li class="active"><a href="./index.html">Home</a></li>
-                <li><a href="./shop-grid.html">Shop</a></li>
-                <li><a href="#">Pages</a>
-                    <ul class="header__menu__dropdown">
-                        <li><a href="./shop-details.html">Shop Details</a></li>
-                        <li><a href="./shoping-cart.html">Shoping Cart</a></li>
-                        <li><a href="./checkout.html">Check Out</a></li>
-                        <li><a href="./blog-details.html">Blog Details</a></li>
-                    </ul>
-                </li>
-                <li><a href="./blog.html">Blog</a></li>
-                <li><a href="./contact.html">Contact</a></li>
+                <li class="{{ \Route::currentRouteName() == 'index' ? 'active' : '' }}"><a href="{{ route('index') }}">Home</a></li>
+                <li class="{{ \Route::currentRouteName() == 'shop' ? 'active' : '' }}"><a href="{{ route('shop') }}">Shop</a></li>
+                <li class="{{ \Route::currentRouteName() == 'blog' ? 'active' : '' }}"><a href="{{ route('blog') }}">Blog</a></li>
+                <li class="{{ \Route::currentRouteName() == 'contact' ? 'active' : '' }}"><a href="{{ route('contact') }}">Contact</a></li>
             </ul>
         </nav>
         <div id="mobile-menu-wrap"></div>
@@ -104,10 +101,10 @@
                     <div class="col-lg-6 col-md-6">
                         <div class="header__top__right">
                             <div class="header__top__right__social">
-                                <a href="#"><i class="fa fa-facebook"></i></a>
-                                <a href="#"><i class="fa fa-twitter"></i></a>
-                                <a href="#"><i class="fa fa-linkedin"></i></a>
-                                <a href="#"><i class="fa fa-pinterest-p"></i></a>
+                                <a href="https://www.facebook.com/vuthanhtrung123/?locale=vi_VN"><i class="fa fa-facebook"></i></a>
+                                <a href="https://twitter.com/VThnhTr36168540"><i class="fa fa-twitter"></i></a>
+                                <a href="linkedin.com/in/vũ-trung-28a5b525b/"><i class="fa fa-linkedin"></i></a>
+                                <a href="https://www.pinterest.com/vuthanhtrung385/"><i class="fa fa-pinterest-p"></i></a>
                             </div>
                             <div class="header__top__right__language">
                                 <img src="{{ asset('assets/img/language.png') }}" alt="">
@@ -136,28 +133,20 @@
                 <div class="col-lg-6">
                     <nav class="header__menu">
                         <ul>
-                            <li class="active"><a href="./index.html">Home</a></li>
-                            <li><a href="./shop-grid.html">Shop</a></li>
-                            <li><a href="#">Pages</a>
-                                <ul class="header__menu__dropdown">
-                                    <li><a href="./shop-details.html">Shop Details</a></li>
-                                    <li><a href="./shoping-cart.html">Shoping Cart</a></li>
-                                    <li><a href="./checkout.html">Check Out</a></li>
-                                    <li><a href="./blog-details.html">Blog Details</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="./blog.html">Blog</a></li>
-                            <li><a href="./contact.html">Contact</a></li>
+                            <li class="{{ \Route::currentRouteName() == 'index' ? 'active' : '' }}"><a href="{{ route('index') }}">Home</a></li>
+                            <li class="{{ \Route::currentRouteName() == 'shop' ? 'active' : '' }}"><a href="{{ route('shop') }}">Shop</a></li>
+                            <li class="{{ \Route::currentRouteName() == 'blog' ? 'active' : '' }}"><a href="{{ route('blog') }}">Blog</a></li>
+                            <li class="{{ \Route::currentRouteName() == 'contact' ? 'active' : '' }}"><a href="{{ route('contact') }}">Contact</a></li>
                         </ul>
                     </nav>
                 </div>
                 <div class="col-lg-3">
                     <div class="header__cart">
                         <ul>
-                            <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
-                            <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+                            <li><a href="#"><i class="fa fa-heart"></i> <span>{{ $wishlist_items_count }}</span></a></li>
+                            <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>{{ $cart_items_count }}</span></a></li>
                         </ul>
-                        <div class="header__cart__price">item: <span>$150.00</span></div>
+                        <div class="header__cart__price">item: <span>${{ $total_price }}</span></div>
                     </div>
                 </div>
             </div>
@@ -181,7 +170,7 @@
                         <ul style="{{ \Route::currentRouteName() !== 'index' ? 'display: none;' : '' }}">
                             @foreach($main_categories as $category)
                             <li>
-                                <a href="#">{{ $category->name }}</a>
+                                <a href="{{ route('category', $category->slug) }}">{{ $category->name }}</a>
                             </li>
                             @endforeach
                             
@@ -299,8 +288,106 @@
     <script src="{{ asset('assets/js/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
 
+    <script>
+        class Cart {
+            static update = ( cart_type = 'default' ) => {
+                let rowIds = [];
+                let qtys = [];
 
+                let rows = $(".shoping__cart__table table tbody tr").each( (index, element) => {
+                    let id = $(element).attr('id');
+                    let new_qty = $(element).find(".shoping__cart__quantity .pro-qty input").val();
+                    qtys.push(new_qty);
+                    rowIds.push(id);
+                });
 
+                let formData = new FormData();
+                let token = $("meta[name='_token']").attr('content');
+                formData.append( 'cart_type', cart_type );
+                formData.append( 'rows', JSON.stringify( rowIds ) );
+                formData.append( 'qtys', JSON.stringify( qtys ) );
+                formData.append( '_token', token );
+                $.ajax({
+                    url: "{{ route('update_cart') }}",
+                    data: formData,
+                    type: "POST",
+                    dataType: "JSON",
+                    processData: false,
+                    contentType: false,
+                    success: (response) => {
+                        if( response.success )
+                        {
+                            let message = "<div class='alert alert-success ajax-message'>" + response.message + "</div>";
+                            $("body").append(message);
+
+                            $("#shoping_cart_tbody").load(location.href + " #shoping_cart_tbody tr");
+                            $("#cart_total").load(location.href + " #cart_total li")
+
+                        }
+                        setTimeout( (e) => {
+                            $("body .ajax-message").remove();
+                        }, 5000)
+                    }
+                })
+            };
+
+            static remove = (rowId, cart_type = 'default') => {
+                let formData = new FormData();
+                let token = $("meta[name='_token']").attr('content');
+                formData.append('cart_type', cart_type);
+                formData.append('rowId', rowId);
+                formData.append('_token', token);
+                $.ajax({
+                    url: "{{ route('remove_from_cart') }}",
+                    data: formData,
+                    type: "POST",
+                    dataType: "JSON",
+                    processData: false,
+                    contentType: false,
+                    success: (response) => {
+                        if( response.success )
+                        {
+                            let message = "<div class='alert alert-success ajax-message'>" + response.message + "</div>";
+                            $("body").append(message);
+
+                            $(`#${rowId}`).remove();
+                            $("#cart_total").load(location.href + " #cart_total li")
+                        }
+                        setTimeout( (e) => {
+                            $("body .ajax-message").remove();
+                        }, 5000)
+                    }
+                })
+            };
+            static add = (slug, cart_type = 'default') => {
+                let formData = new FormData();
+                let token = $("meta[name='_token']").attr('content');
+
+                formData.append('cart_type', cart_type);
+                formData.append('slug', slug);
+                formData.append('_token', token);
+                $.ajax({
+                    url: "{{ route('add_to_cart') }}",
+                    data: formData,
+                    type: "POST",
+                    dataType: "JSON",
+                    processData: false,
+                    contentType: false,
+                    success: (response) => {
+                        if( response.success )
+                        {
+                            let message = "<div class='alert alert-success ajax-message'>" + response.message + "</div>";
+                            $("body").append(message);
+                        }
+                        setTimeout( (e) => {
+                            $("body .ajax-message").remove();
+                        }, 5000)
+                    }
+                })
+            }
+        }
+    </script>
+    @yield('scripts')
 </body>
 
 </html>
