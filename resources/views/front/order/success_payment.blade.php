@@ -31,6 +31,9 @@
     .horizontal-timeline .items .items-list {
     padding-top: 15px;
     }
+    .hero {
+        padding-bottom: 0;
+    }
 </style>
 @endsection
 
@@ -39,7 +42,7 @@
 <section class="h-100 h-custom" style="background-color: #eee;">
   <div class="container py-4 h-50">
     <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-lg-8 col-xl-6">
+      <div class="col-lg-12 col-xl-12">
         <div class="card border-top border-bottom border-3" style="border-color: #7fad39 !important;">
           <div class="card-body p-5">
 
@@ -59,27 +62,30 @@
             </div>
 
             <div class="mx-n5 px-5 py-4" style="background-color: #f2f2f2;">
+              @foreach($order->orderItems as $orderItem)
               <div class="row">
                 <div class="col-md-8 col-lg-9">
-                  <p>BEATS Solo 3 Wireless Headphones</p>
+                  <p>{{ $orderItem->product->title }}</p>
                 </div>
                 <div class="col-md-4 col-lg-3">
-                  <p>£299.99</p>
+                  <p>${{ $orderItem->product->getPrice() }}</p>
                 </div>
               </div>
+              @endforeach
               <div class="row">
                 <div class="col-md-8 col-lg-9">
                   <p class="mb-0">Shipping</p>
                 </div>
                 <div class="col-md-4 col-lg-3">
-                  <p class="mb-0">£33.00</p>
+                  <p class="mb-0">${{ number_format( $order->tax / 100 , 2, ',', ',') }}</p>
                 </div>
               </div>
             </div>
 
             <div class="row my-4">
               <div class="col-md-4 offset-md-8 col-lg-3 offset-lg-9">
-                <p class="lead fw-bold mb-0" style="color: #7fad39;">£262.99</p>
+                <p class="lead fw-bold mb-0" style="color: #7fad39;">
+                ${{ number_format( ( $order->price ) / 100 , 2, ',', ',') }}</p>
               </div>
             </div>
 

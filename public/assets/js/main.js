@@ -167,14 +167,27 @@
         maxamount = $("#maxamount"),
         minPrice = rangeSlider.data('min'),
         maxPrice = rangeSlider.data('max');
+
+        let url_price_from = rangeSlider.data('price_from');
+        let url_price_to = rangeSlider.data('price_to');
+
     rangeSlider.slider({
         range: true,
         min: minPrice,
         max: maxPrice,
-        values: [minPrice, maxPrice],
+        values: [url_price_from, url_price_to],
         slide: function (event, ui) {
             minamount.val('$' + ui.values[0]);
             maxamount.val('$' + ui.values[1]);
+        },
+        stop: function(event, ui) {
+            let price_from = ui.values[0];
+            let price_to = ui.values[1];
+
+            let filters = [];
+            filters['price_from'] = price_from;
+            filters['price_to'] = price_to;
+            appendParam(filters);
         }
     });
     minamount.val('$' + rangeSlider.slider("values", 0));
@@ -202,10 +215,8 @@
     /*-------------------
 		Quantity change
 	--------------------- */
-    var proQty = $('.pro-qty');
-    proQty.prepend('<span class="dec qtybtn">-</span>');
-    proQty.append('<span class="inc qtybtn">+</span>');
-    proQty.on('click', '.qtybtn', function () {
+    
+    $(document).on('click', '.qtybtn', function () {
         var $button = $(this);
         var oldValue = $button.parent().find('input').val();
         if ($button.hasClass('inc')) {

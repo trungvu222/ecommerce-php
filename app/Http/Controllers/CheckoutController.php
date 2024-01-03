@@ -19,16 +19,15 @@ class CheckoutController extends Controller
 
     public function store(CheckoutRequest $request)
     {
-        $request_attributes = $request->all();
         $stripe = new \Stripe\StripeClient( env('STRIPE_SECRET_KEY') );
 
         $line_items = [];
         $orderPrice = 0;
-        $item_ids = [];
+        $product_ids = [];
 
         foreach(Cart::getAll() as $item)
         {
-            $orderPrice += $item->model->price;
+            $qty = $item->qty;
 
             $price_data = [];
             $price_data['currency'] = 'usd';
@@ -37,11 +36,21 @@ class CheckoutController extends Controller
 
             $item_data = array(
                 'price_data' => $price_data,
-                'quantity' => $item->qty
+                'quantity' => $qty,
             );
             $line_items[] = $item_data;
-            $item_ids[] = array('product_id' => $item->model->id);
+
+            while($qty) {
+                $orderPrice += $item->price;
+                $product_ids[] = array('product_id' => $item->model->id);
+                $qty--;
+            }
         }
+
+        if(count($product_ids) === 0) {
+            abort(500);
+        }
+
         $line_items[] = array(
             'price_data' => array(
                 'currency' => 'usd',
@@ -54,23 +63,13 @@ class CheckoutController extends Controller
         $orderPrice += \Cart::tax(0, '', '');
 
         // inserting a new order for this session
-
-        $main_order_attributes = [
-            'price' => $orderPrice,
-            'payment_method' => Order::STRIPE_PAYMENT_METHOD,
-            'status' => Order::PENDING_ORDER_STATUS
-        ];
-        $all_attributes = array_merge($main_order_attributes, $request_attributes);
-        
-        $order = Order::create($all_attributes);
-
-        $orderItems = $order->orderItems()->createMany($item_ids);
+        $order = Order::createWithOrderItems($orderPrice, $request, $product_ids);
         
         $checkout_session = $stripe->checkout->sessions->create([
             'line_items' => $line_items,
             'mode' => 'payment',
-            'success_url' => route('success_payment'),
-            'cancel_url' => route('cancelled_payment'),
+            'success_url' => route('success_payment', $order),
+            'cancel_url' => route('cancelled_payment', $order),
         ]);
 
         return redirect($checkout_session->url);

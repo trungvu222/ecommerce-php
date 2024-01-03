@@ -63,23 +63,27 @@
                                 <p>Country<span>*</span></p>
                                 <input type="text" name="country" required>
                             </div>
-                            <!-- <div class="checkout__input">
-                                <p>Address<span>*</span></p>
-                                <input type="text" placeholder="Street Address" class="checkout__input__add">
-                                <input type="text" placeholder="Apartment, suite, unite ect (optinal)">
-                            </div> -->
+                            
                             <div class="checkout__input">
                                 <p>Town/City<span>*</span></p>
                                 <input type="text" name="city" required>
                             </div>
-                            <!-- <div class="checkout__input">
-                                <p>Country/State<span>*</span></p>
-                                <input type="text">
-                            </div> -->
+
+                            <div class="checkout__input">
+                                <p>Address line 1<span>*</span></p>
+                                <input type="text" placeholder="Address Line 1" name="address_line_1" required>
+                            </div>
+
+                            <div class="checkout__input">
+                                <p>Address line 2</p>
+                                <input type="text" placeholder="Address Line 2" name="address_line_2">
+                            </div>
+
                             <div class="checkout__input">
                                 <p>Postcode / ZIP<span>*</span></p>
                                 <input type="text" name="zipcode" required>
                             </div>
+
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
@@ -107,17 +111,31 @@
                                 <p>Account Password<span>*</span></p>
                                 <input type="text">
                             </div>
-                            <!-- <div class="checkout__input__checkbox">
-                                <label for="diff-acc">
-                                    Ship to a different address?
-                                    <input type="checkbox" id="diff-acc">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div> -->
+
                             <div class="checkout__input">
                                 <p>Order notes</p>
                                 <input type="text" name="notes"
                                     placeholder="Notes about your order, e.g. special notes for delivery.">
+                            </div>
+
+                            <hr>
+
+                            <a href="#shipToAnotherAddress" data-toggle="collapse" aria-expanded="false" aria-controls="shipToAnotherAddress">
+                                <h4>
+                                    Ship to a different address?
+                                </h4>
+                            </a>
+
+                            <div class="collapse" id="shipToAnotherAddress">
+                                <div class="checkout__input">
+                                    <p>Ship Address line 1</p>
+                                    <input type="text" placeholder="Ship Address Line 1" name="ship_address_line_1">
+                                </div>
+
+                                <div class="checkout__input">
+                                    <p>Ship Address line 2</p>
+                                    <input type="text" placeholder="Ship Address Line 2" name="ship_address_line_2">
+                                </div>
                             </div>
 
                         </div>
@@ -162,8 +180,12 @@
                                         <span class="checkmark"></span>
                                     </label>
                                 </div>
+                                @if(count($cart_products))
                                 <button type="submit" class="site-btn">PLACE ORDER</button>
-                                
+                                @else
+                                <button type="button" title="Your cart is empty" class="invalid-order-btn site-btn">PLACE ORDER</button>
+                                @endif
+
                             </div>
                         </div>
                     </div>

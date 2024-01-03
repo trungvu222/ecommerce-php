@@ -31,6 +31,9 @@
     .horizontal-timeline .items .items-list {
     padding-top: 15px;
     }
+    .hero {
+        padding-bottom: 0;
+    }
 </style>
 @endsection
 
@@ -39,7 +42,7 @@
 <section class="h-100 h-custom" style="background-color: #eee;">
   <div class="container py-4 h-50">
     <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-lg-8 col-xl-6">
+      <div class="col-lg-12 col-xl-12">
         <div class="card border-top border-bottom border-3" style="border-color: #7fad39 !important;">
           <div class="card-body p-5">
 

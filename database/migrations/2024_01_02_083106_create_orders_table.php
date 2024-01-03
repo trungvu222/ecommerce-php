@@ -22,7 +22,12 @@ return new class extends Migration
             $table->unsignedInteger('zipcode');
 
             $table->unsignedInteger('price');
+            $table->unsignedInteger('tax');
             $table->string('payment_method');
+            $table->string('address_line_1');
+            $table->string('address_line_2')->nullable();
+            $table->string('ship_address_line_1')->nullable();
+            $table->string('ship_address_line_2')->nullable();
             $table->string('status');
             $table->string('notes')->nullable();
 

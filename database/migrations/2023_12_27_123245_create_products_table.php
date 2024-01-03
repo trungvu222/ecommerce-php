@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug');
             $table->unsignedInteger('price');
+            $table->unsignedInteger('discount');
             $table->string('thumbnail');
             $table->foreignId('category_id');
             $table->foreignId('user_id');
